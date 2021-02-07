@@ -1,4 +1,4 @@
-var rpio = require('../lib/rpio');
+var npio = require('../lib/npio');
 
 /*
  * Magic numbers to initialise the i2c display device and write output,
@@ -13,9 +13,9 @@ var LCD_ENABLE = 0x04, LCD_BACKLIGHT = 0x08;
  */
 function lcdwrite4(data)
 {
-	rpio.i2cWrite(Buffer([(data | LCD_BACKLIGHT)]));
-	rpio.i2cWrite(Buffer([(data | LCD_ENABLE | LCD_BACKLIGHT)]));
-	rpio.i2cWrite(Buffer([((data & ~LCD_ENABLE) | LCD_BACKLIGHT)]));
+	npio.i2cWrite(Buffer([(data | LCD_BACKLIGHT)]));
+	npio.i2cWrite(Buffer([(data | LCD_ENABLE | LCD_BACKLIGHT)]));
+	npio.i2cWrite(Buffer([((data & ~LCD_ENABLE) | LCD_BACKLIGHT)]));
 }
 
 function lcdwrite(data, mode)
@@ -39,14 +39,14 @@ function lineout(str, addr)
 /*
  * We can now start the program, talking to the i2c LCD at address 0x27.
  */
-rpio.i2cBegin();
-rpio.i2cSetSlaveAddress(0x27);
-rpio.i2cSetBaudRate(10000);
+npio.i2cBegin();
+npio.i2cSetSlaveAddress(0x27);
+npio.i2cSetBaudRate(10000);
 
 for (var i = 0; i < init.length; i++)
 	lcdwrite(init[i], 0);
 
 lineout('node.js i2c LCD!', LCD_LINE1);
-lineout('npm install rpio', LCD_LINE2);
+lineout('npm install npio', LCD_LINE2);
 
-rpio.i2cEnd();
+npio.i2cEnd();

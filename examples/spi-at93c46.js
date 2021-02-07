@@ -1,13 +1,13 @@
-var rpio = require('../lib/rpio');
+var npio = require('../lib/npio');
 
 /*
  * Read data from an SPI-attached AT93C46 EEPROM.
  */
-rpio.spiBegin();
-rpio.spiChipSelect(0);			/* Use CE0 */
-rpio.spiSetCSPolarity(0, rpio.HIGH);	/* AT93C46 chip select is active-high */
-rpio.spiSetClockDivider(128);		/* AT93C46 max is 2MHz, 128 == 1.95MHz */
-rpio.spiSetDataMode(0);
+npio.spiBegin();
+npio.spiChipSelect(0);			/* Use CE0 */
+npio.spiSetCSPolarity(0, npio.HIGH);	/* AT93C46 chip select is active-high */
+npio.spiSetClockDivider(128);		/* AT93C46 max is 2MHz, 128 == 1.95MHz */
+npio.spiSetDataMode(0);
 
 /*
  * There are various magic numbers below.  A quick overview:
@@ -27,8 +27,8 @@ var i, j = 0;
 
 for (i = 0; i < 128; i++, ++j) {
 	tx[1] = i;
-	rpio.spiTransfer(tx, rx, 4);
+	npio.spiTransfer(tx, rx, 4);
 	out = ((rx[2] << 1) | (rx[3] >> 7));
 	process.stdout.write(out.toString(16) + ((j % 16 == 0) ? '\n' : ' '));
 }
-rpio.spiEnd();
+npio.spiEnd();

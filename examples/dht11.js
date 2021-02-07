@@ -1,4 +1,4 @@
-var rpio = require('../lib/rpio');
+var npio = require('../lib/npio');
 
 /*
  * Read a DHT11 attached to P07 / GPIO4 and print out the current temperature
@@ -13,22 +13,22 @@ var i;
 /*
  * Initiate the MCU sequence.
  */
-rpio.open(pin, rpio.OUTPUT);
-rpio.write(pin, rpio.HIGH);
-rpio.msleep(500);
-rpio.write(pin, rpio.LOW);
+npio.open(pin, npio.OUTPUT);
+npio.write(pin, npio.HIGH);
+npio.msleep(500);
+npio.write(pin, npio.LOW);
 /*
  * The datasheet says 18us, but we need to account for the JavaScript function
  * call overhead.  Trial and error suggests this is a working value.
  */
-rpio.msleep(3);
-rpio.write(pin, rpio.HIGH);
+npio.msleep(3);
+npio.write(pin, npio.HIGH);
 
 /*
  * Switch to input mode and read as fast as possible into our buffer.
  */
-rpio.mode(pin, rpio.INPUT);
-rpio.readbuf(pin, buf);
+npio.mode(pin, npio.INPUT);
+npio.readbuf(pin, buf);
 
 /*
  * Parse the buffer for lengths of each high section.  The length determines

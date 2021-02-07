@@ -1,8 +1,8 @@
 {
-  "name": "rpio",
+  "name": "npio",
   "version": "0.9.19",
   "description": "High performance GPIO/i2c/PWM/SPI module for Raspberry Pi, NanoPi and Orange Pi",
-  "main": "./lib/rpio.js",
+  "main": "lib/npio.js",
   "scripts": {
     "test": "true",
     "install": "node-gyp rebuild"
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jperkin/node-rpio.git"
+    "url": "https://github.com/lubino/node-npio"
   },
   "keywords": [
     "bcm2835",
@@ -34,7 +34,7 @@
     "rpi",
     "spi"
   ],
-  "author": "Jonathan Perkin <jonathan@perkin.org.uk> (http://www.perkin.org.uk/)",
+  "author": "Lubos Strapko <lubino@gmail.com>, Jonathan Perkin <jonathan@perkin.org.uk>",
   "license": "(ISC AND GPL-2.0)",
   "gypfile": true
 }

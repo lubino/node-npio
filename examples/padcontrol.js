@@ -1,13 +1,13 @@
-var rpio = require('../lib/rpio');
+var npio = require('../lib/npio');
 
-rpio.init({gpiomem: false});
+npio.init({gpiomem: false});
 
 /* Print the current pad control settings for the primary GPIO pins. */
-var curpad = rpio.readpad(rpio.PAD_GROUP_0_27);
+var curpad = npio.readpad(npio.PAD_GROUP_0_27);
 
 /* Test bits for settings. */
-var slew = ((curpad & rpio.PAD_SLEW_UNLIMITED) == rpio.PAD_SLEW_UNLIMITED);
-var hysteresis = ((curpad & rpio.PAD_HYSTERESIS) == rpio.PAD_HYSTERESIS)
+var slew = ((curpad & npio.PAD_SLEW_UNLIMITED) === npio.PAD_SLEW_UNLIMITED);
+var hysteresis = ((curpad & npio.PAD_HYSTERESIS) === npio.PAD_HYSTERESIS)
 var drive = (curpad & 0x7);
 
 console.log('GPIO Pad Control for GPIO0 - GPIO27 is currently set to:');

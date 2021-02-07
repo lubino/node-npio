@@ -21,8 +21,8 @@
 #define BCK2835_LIBRARY_BUILD
 #include "bcm2835.h"
 
-#define RPIO_EVENT_LOW	0x1
-#define RPIO_EVENT_HIGH	0x2
+#define npio_EVENT_LOW	0x1
+#define npio_EVENT_HIGH	0x2
 
 /* This define enables a little test program (by default a blinking output on pin RPI_GPIO_PIN_11)
 // You can do some safe, non-destructive testing on any platform with:
@@ -305,10 +305,10 @@ void bcm2835_gpio_event_set(uint8_t pin, uint32_t direction)
 	 * Add the requested events, using the synchronous rising and
 	 * falling edge detection bits.
 	 */
-	if (direction & RPIO_EVENT_HIGH)
+	if (direction & npio_EVENT_HIGH)
 		bcm2835_gpio_ren(pin);
 
-	if (direction & RPIO_EVENT_LOW)
+	if (direction & npio_EVENT_LOW)
 		bcm2835_gpio_fen(pin);
 }
 

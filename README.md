@@ -1,12 +1,8 @@
-node-rpio
+node-npio
 =========
 
-This is a high performance node.js addon which provides access to the Raspberry
-Pi, Orange Pi and NanoPi NEO Plus2 GPIO interface, supporting regular GPIO as well as i²c, PWM, and SPI.
-
-[![Node.js version](https://img.shields.io/node/v/rpio.svg)](http://nodejs.org/download/)
-[![NPM version](https://badge.fury.io/js/rpio.svg)](http://badge.fury.io/js/rpio)
-[![Build Status](https://travis-ci.org/jperkin/node-rpio.svg?branch=master)](https://travis-ci.org/jperkin/node-rpio)
+This is a high performance node.js addon extended from [jperkin/node-rpio](https://github.com/jperkin/node-rpio)
+to even better support NanoPi Models 
 
 ## Compatibility
 
@@ -24,22 +20,8 @@ cause.
 Easily install the latest via npm:
 
 ```console
-$ npm install rpio
+$ npm install npio
 ```
-
-By default the module will use `/dev/gpiomem` when using simple GPIO access.
-To access this device, your user will need to be a member of the `gpio` group,
-and you may need to configure udev with the following rule (as root):
-
-```console
-$ cat >/etc/udev/rules.d/20-gpiomem.rules <<EOF
-SUBSYSTEM=="bcm2835-gpiomem", KERNEL=="gpiomem", GROUP="gpio", MODE="0660"
-EOF
-```
-
-For access to i²c, PWM, and SPI, or if you are running an older kernel which
-does not have the `bcm2835-gpiomem` module, you will need to run your programs
-as root for access to `/dev/mem`.
 
 ## Quickstart
 
@@ -47,7 +29,7 @@ All these examples use the physical numbering (P01-P40) and assume that the
 example is started with:
 
 ```js
-var rpio = require('rpio');
+var npio = require('npio');
 ```
 
 ### Read a pin
@@ -55,8 +37,8 @@ var rpio = require('rpio');
 Setup pin P11 / GPIO17 for read-only input and print its current value:
 
 ```js
-rpio.open(11, rpio.INPUT);
-console.log('Pin 11 is currently set ' + (rpio.read(11) ? 'high' : 'low'));
+npio.open(11, npio.INPUT);
+console.log('Pin 11 is currently set ' + (npio.read(11) ? 'high' : 'low'));
 ```
 
 ### Blink an LED
@@ -68,7 +50,7 @@ Blink an LED attached to P12 / GPIO18 a few times:
  * Set the initial state to low.  The state is set prior to the pin becoming
  * active, so is safe for devices which require a stable setup.
  */
-rpio.open(12, rpio.OUTPUT, rpio.LOW);
+npio.open(12, npio.OUTPUT, npio.LOW);
 
 /*
  * The sleep functions block, but rarely in these simple programs does one care
@@ -76,12 +58,12 @@ rpio.open(12, rpio.OUTPUT, rpio.LOW);
  */
 for (var i = 0; i < 5; i++) {
         /* On for 1 second */
-        rpio.write(12, rpio.HIGH);
-        rpio.sleep(1);
+        npio.write(12, npio.HIGH);
+        npio.sleep(1);
 
         /* Off for half a second (500ms) */
-        rpio.write(12, rpio.LOW);
-        rpio.msleep(500);
+        npio.write(12, npio.LOW);
+        npio.msleep(500);
 }
 ```
 
@@ -91,7 +73,7 @@ Configure the internal pulldown resistor on P15 / GPIO22 and watch the pin for
 state changes from an attached button switch:
 
 ```js
-rpio.open(15, rpio.INPUT, rpio.PULL_DOWN);
+npio.open(15, npio.INPUT, npio.PULL_DOWN);
 
 function pollcb(pin)
 {
@@ -100,15 +82,15 @@ function pollcb(pin)
          * may be missed during the 1ms poll window.  The best we can do is to
          * print the current state after a event is detected.
          */
-        var state = rpio.read(pin) ? 'pressed' : 'released';
+        var state = npio.read(pin) ? 'pressed' : 'released';
         console.log('Button event on P%d (button currently %s)', pin, state);
 }
 
-rpio.poll(15, pollcb);
+npio.poll(15, pollcb);
 ```
 
 A collection of example programs are also available in the
-[examples](https://github.com/jperkin/node-rpio/tree/master/examples)
+[examples](https://github.com/lubino/node-npio/tree/master/examples)
 directory.
 
 ## Features
@@ -128,18 +110,18 @@ test](https://gist.github.com/jperkin/e1f0ce996c83ccf2bca9) which calculates
 how long it takes to switch a pin on and off 1 million times:
 
 * rpi-gpio (using `/sys`): `701.023` seconds
-* rpio (using `/dev/*mem`): `0.684` seconds
+* npio (using `/dev/*mem`): `0.684` seconds
 
-So rpio can be anywhere up to **1000x faster** than the alternatives.
+So npio can be anywhere up to **1000x faster** than the alternatives.
 
 ### Hardware support
 
 While `/sys` provides a simple interface to GPIO, not all hardware features are
 supported, and it's not always possible to handle certain types of hardware,
 especially when employing an asynchronous model.  Using the `/dev/*mem`
-interface means rpio can support a lot more functionality:
+interface means npio can support a lot more functionality:
 
-* rpio supports sub-millisecond access, with features to support multiple
+* npio supports sub-millisecond access, with features to support multiple
   reads/writes directly with hardware rather than being delayed by the event
   loop.
 
@@ -152,8 +134,8 @@ interface means rpio can support a lot more functionality:
 
 ### Simple programming
 
-rpio tries to make it simple to program devices, rather than having to jump
-through hoops to support an asynchronous workflow.  Some parts of rpio block,
+npio tries to make it simple to program devices, rather than having to jump
+through hoops to support an asynchronous workflow.  Some parts of npio block,
 but that is intentional in order to provide a simpler interface, as well as
 being able to support time-sensitive devices.
 
@@ -165,7 +147,7 @@ performance to match.
 Start by requiring the addon.
 
 ```js
-var rpio = require('rpio');
+var npio = require('npio');
 ```
 
 ### GPIO
@@ -174,12 +156,12 @@ General purpose I/O tries to follow a standard open/read/write/close model.
 
 Some useful constants are provided for use by all supporting functions:
 
-* `rpio.HIGH`: pin high/1/on
-* `rpio.LOW`: pin low/0/off
+* `npio.HIGH`: pin high/1/on
+* `npio.LOW`: pin low/0/off
 
 These can be useful to avoid magic numbers in your code.
 
-#### `rpio.init([options])`
+#### `npio.init([options])`
 
 Initialise the bcm2835 library.  This will be called automatically by `.open()`
 using the default option values if not called explicitly.  The default values
@@ -209,7 +191,7 @@ be executed as the root user (e.g. via sudo).  If you do not explicitly call
 You may also need to use `gpiomem: false` if you are running on an older Linux
 kernel which does not support the `gpiomem` module.
 
-rpio will throw an exception if you try to use one of the non-GPIO functions
+npio will throw an exception if you try to use one of the non-GPIO functions
 after already opening with `/dev/gpiomem`, as well as checking to see if you
 have the necessary permissions.
 
@@ -245,8 +227,8 @@ Valid options:
 Examples:
 
 ```js
-rpio.init({gpiomem: false});    /* Use /dev/mem for i²c/PWM/SPI */
-rpio.init({mapping: 'gpio'});   /* Use the GPIOxx numbering */
+npio.init({gpiomem: false});    /* Use /dev/mem for i²c/PWM/SPI */
+npio.init({mapping: 'gpio'});   /* Use the GPIOxx numbering */
 ```
 
 ##### `mock`
@@ -255,7 +237,7 @@ Mock mode is a dry-run environment where everything except pin access is
 performed.  This is useful for testing scripts, and can also be used on systems
 which do not support GPIO at all.
 
-If rpio is executed on unsupported hardware it will automatically start up in
+If npio is executed on unsupported hardware it will automatically start up in
 mock mode, and a `warn` event is emitted.  By default the `warn` event is
 handled by a simple logger to `stdout`, but this can be overridden by the user
 creating their own `warn` handler.
@@ -285,19 +267,19 @@ Examples:
  * unsupported hardware, or to test scripts in a different hardware
  * environment (e.g. to check pin settings).
  */
-rpio.init({mock: 'raspi-3'});
+npio.init({mock: 'raspi-3'});
 
 /* Override default warn handler to avoid mock warnings */
-rpio.on('warn', function() {});
+npio.on('warn', function() {});
 ```
 
-#### `rpio.open(pin, mode[, option])`
+#### `npio.open(pin, mode[, option])`
 
 Open a pin for input or output.  Valid modes are:
 
-* `rpio.INPUT`: pin is input (read-only).
-* `rpio.OUTPUT`: pin is output (read-write).
-* `rpio.PWM`: configure pin for hardware PWM (see PWM section below).
+* `npio.INPUT`: pin is input (read-only).
+* `npio.OUTPUT`: pin is output (read-write).
+* `npio.PWM`: configure pin for hardware PWM (see PWM section below).
 
 For input pins, `option` can be used to configure the internal pullup or
 pulldown resistors using options as described in the `.pud()` documentation
@@ -313,16 +295,16 @@ Examples:
 
 ```js
 /* Configure P11 as input with the internal pulldown resistor enabled */
-rpio.open(11, rpio.INPUT, rpio.PULL_DOWN);
+npio.open(11, npio.INPUT, npio.PULL_DOWN);
 
 /* Configure P12 as output with the initiate state set high */
-rpio.open(12, rpio.OUTPUT, rpio.HIGH);
+npio.open(12, npio.OUTPUT, npio.HIGH);
 
 /* Configure P13 as output, but leave it in its initial undefined state */
-rpio.open(13, rpio.OUTPUT);
+npio.open(13, npio.OUTPUT);
 ```
 
-#### `rpio.mode(pin, mode)`
+#### `npio.mode(pin, mode)`
 
 Switch a pin that has already been opened in one mode to a different mode.
 This is provided primarily for performance reasons, as it avoids some of the
@@ -331,20 +313,20 @@ setup work done by `.open()`.
 Example:
 
 ```js
-rpio.mode(12, rpio.INPUT);      /* Switch P12 back to input mode */
+npio.mode(12, npio.INPUT);      /* Switch P12 back to input mode */
 ```
 
-#### `rpio.read(pin)`
+#### `npio.read(pin)`
 
 Read the current value of `pin`, returning either `1` (high) or `0` (low).
 
 Example:
 
 ```js
-console.log('Pin 12 = %d', rpio.read(12));
+console.log('Pin 12 = %d', npio.read(12));
 ```
 
-#### `rpio.readbuf(pin, buffer[, length])`
+#### `npio.readbuf(pin, buffer[, length])`
 
 Read `length` bits from `pin` into `buffer` as fast as possible.  If `length`
 isn't specified it defaults to `buffer.length`.
@@ -352,7 +334,7 @@ isn't specified it defaults to `buffer.length`.
 This is useful for devices which send out information faster than the
 JavaScript function call overhead can handle, e.g. if you need microsecond
 accuracy.  See
-[dht11.js](https://github.com/jperkin/node-rpio/blob/master/examples/dht11.js)
+[dht11.js](https://github.com/lubino/node-npio/blob/master/examples/dht11.js)
 for an example which uses this to pull data from a DHT11 temperature/humidity
 sensor.
 
@@ -362,21 +344,21 @@ Example:
 var buf = new Buffer(10000);
 
 /* Read the value of Pin 12 10,000 times in a row, storing the values in buf */
-rpio.readbuf(12, buf);
+npio.readbuf(12, buf);
 ```
 
-#### `rpio.write(pin, value)`
+#### `npio.write(pin, value)`
 
 Set the specified pin either high or low, using either the
-`rpio.HIGH`/`rpio.LOW` constants, or simply `1` or `0`.
+`npio.HIGH`/`npio.LOW` constants, or simply `1` or `0`.
 
 Example:
 
 ```js
-rpio.write(13, rpio.HIGH);
+npio.write(13, npio.HIGH);
 ```
 
-#### `rpio.writebuf(pin, buffer[, length])`
+#### `npio.writebuf(pin, buffer[, length])`
 
 Write `length` bits to `pin` from `buffer` as fast as possible.  If `length`
 isn't specified it defaults to `buffer.length`.
@@ -385,36 +367,36 @@ Example:
 
 ```js
 /* Write 1 0 1 0 1 0 1 0 to Pin 13 */
-var buf = new Buffer(8).fill(rpio.LOW);
-buf[0] = buf[2] = buf[4] = buf[6] = rpio.HIGH;
-rpio.writebuf(13, buf);
+var buf = new Buffer(8).fill(npio.LOW);
+buf[0] = buf[2] = buf[4] = buf[6] = npio.HIGH;
+npio.writebuf(13, buf);
 ```
 
-#### `rpio.readpad(group)`
+#### `npio.readpad(group)`
 
 Read the current state of the GPIO pad control for the specified GPIO group.
 On current models of Raspberry Pi there are three groups with corresponding
 defines:
 
-* `rpio.PAD_GROUP_0_27`: GPIO0 - GPIO27.  Use this for the main GPIO header.
-* `rpio.PAD_GROUP_28_45`: GPIO28 - GPIO45.  Use this to configure the P5 header.
-* `rpio.PAD_GROUP_46_53`: GPIO46 - GPIO53.  Internal, you probably won't need this.
+* `npio.PAD_GROUP_0_27`: GPIO0 - GPIO27.  Use this for the main GPIO header.
+* `npio.PAD_GROUP_28_45`: GPIO28 - GPIO45.  Use this to configure the P5 header.
+* `npio.PAD_GROUP_46_53`: GPIO46 - GPIO53.  Internal, you probably won't need this.
 
 The value returned will be a bit mask of the following defines:
 
-* `rpio.PAD_SLEW_UNLIMITED`: `0x10`.  Slew rate unlimited if set.
-* `rpio.PAD_HYSTERESIS`: `0x08`.  Hysteresis is enabled if set.
+* `npio.PAD_SLEW_UNLIMITED`: `0x10`.  Slew rate unlimited if set.
+* `npio.PAD_HYSTERESIS`: `0x08`.  Hysteresis is enabled if set.
 
 The bottom three bits determine the drive current:
 
-* `rpio.PAD_DRIVE_2mA`: `0b000`
-* `rpio.PAD_DRIVE_4mA`: `0b001`
-* `rpio.PAD_DRIVE_6mA`: `0b010`
-* `rpio.PAD_DRIVE_8mA`: `0b011`
-* `rpio.PAD_DRIVE_10mA`: `0b100`
-* `rpio.PAD_DRIVE_12mA`: `0b101`
-* `rpio.PAD_DRIVE_14mA`: `0b110`
-* `rpio.PAD_DRIVE_16mA`: `0b111`
+* `npio.PAD_DRIVE_2mA`: `0b000`
+* `npio.PAD_DRIVE_4mA`: `0b001`
+* `npio.PAD_DRIVE_6mA`: `0b010`
+* `npio.PAD_DRIVE_8mA`: `0b011`
+* `npio.PAD_DRIVE_10mA`: `0b100`
+* `npio.PAD_DRIVE_12mA`: `0b101`
+* `npio.PAD_DRIVE_14mA`: `0b110`
+* `npio.PAD_DRIVE_16mA`: `0b111`
 
 Note that the pad control registers are not available via `/dev/gpiomem`, so
 you will need to use `.init({gpiomem: false})` and run as root.
@@ -422,10 +404,10 @@ you will need to use `.init({gpiomem: false})` and run as root.
 Example:
 
 ```js
-var curpad = rpio.readpad(rpio.PAD_GROUP_0_27);
+var curpad = npio.readpad(npio.PAD_GROUP_0_27);
 
-var slew = ((curpad & rpio.PAD_SLEW_UNLIMITED) == rpio.PAD_SLEW_UNLIMITED);
-var hysteresis = ((curpad & rpio.PAD_HYSTERESIS) == rpio.PAD_HYSTERESIS);
+var slew = ((curpad & npio.PAD_SLEW_UNLIMITED) == npio.PAD_SLEW_UNLIMITED);
+var hysteresis = ((curpad & npio.PAD_HYSTERESIS) == npio.PAD_HYSTERESIS);
 var drive = (curpad & 0x7);
 
 console.log('GPIO Pad Control for GPIO0 - GPIO27 is currently set to:');
@@ -434,7 +416,7 @@ console.log('\tInput hysteresis: ' + (hysteresis ? 'enabled' : 'disabled'));
 console.log('\tDrive rate: ' + (drive * 2 + 2) + 'mA');
 ```
 
-#### `rpio.writepad(group, control)`
+#### `npio.writepad(group, control)`
 
 Write `control` settings to the pad control for `group`.  Uses the same defines
 as above for `.readpad()`.
@@ -443,37 +425,37 @@ Example:
 
 ```js
 /* Disable input hysteresis but retain other current settings. */
-var control = rpio.readpad(rpio.PAD_GROUP_0_27);
-control &= ~rpio.PAD_HYSTERESIS;
-rpio.writepad(rpio.PAD_GROUP_0_27, control);
+var control = npio.readpad(npio.PAD_GROUP_0_27);
+control &= ~npio.PAD_HYSTERESIS;
+npio.writepad(npio.PAD_GROUP_0_27, control);
 ```
 
-#### `rpio.pud(pin, state)`
+#### `npio.pud(pin, state)`
 
 Configure the pin's internal pullup or pulldown resistors, using the following
 `state` constants:
 
-* `rpio.PULL_OFF`: disable configured resistors.
-* `rpio.PULL_DOWN`: enable the pulldown resistor.
-* `rpio.PULL_UP`: enable the pullup resistor.
+* `npio.PULL_OFF`: disable configured resistors.
+* `npio.PULL_DOWN`: enable the pulldown resistor.
+* `npio.PULL_UP`: enable the pullup resistor.
 
 Examples:
 
 ```js
-rpio.pud(11, rpio.PULL_UP);
-rpio.pud(12, rpio.PULL_DOWN);
+npio.pud(11, npio.PULL_UP);
+npio.pud(12, npio.PULL_DOWN);
 ```
 
-#### `rpio.poll(pin, cb[, direction])`
+#### `npio.poll(pin, cb[, direction])`
 
 Watch `pin` for changes and execute the callback `cb()` on events.  `cb()`
 takes a single argument, the pin which triggered the callback.
 
 The optional `direction` argument can be used to watch for specific events:
 
-* `rpio.POLL_LOW`: poll for falling edge transitions to low.
-* `rpio.POLL_HIGH`: poll for rising edge transitions to high.
-* `rpio.POLL_BOTH`: poll for both transitions (the default).
+* `npio.POLL_LOW`: poll for falling edge transitions to low.
+* `npio.POLL_HIGH`: poll for rising edge transitions to high.
+* `npio.POLL_BOTH`: poll for both transitions (the default).
 
 Due to hardware/kernel limitations we can only poll for changes, and the event
 detection only says that an event occurred, not which one.  The poll interval
@@ -492,24 +474,24 @@ function nuke_button(pin)
         console.log('Nuke button on pin %d pressed', pin);
 
         /* No need to nuke more than once. */
-        rpio.poll(pin, null);
+        npio.poll(pin, null);
 }
 
 function regular_button(pin)
 {
         /* Watch pin 11 forever. */
-        console.log('Button event on pin %d, is now %d', pin, rpio.read(pin));
+        console.log('Button event on pin %d, is now %d', pin, npio.read(pin));
 }
 
 /*
  * Pin 11 watches for both high and low transitions.  Pin 12 only watches for
  * high transitions (e.g. the nuke button is pushed).
  */
-rpio.poll(11, regular_button);
-rpio.poll(12, nuke_button, rpio.POLL_HIGH);
+npio.poll(11, regular_button);
+npio.poll(12, nuke_button, npio.POLL_HIGH);
 ```
 
-#### `rpio.close(pin[, reset])`
+#### `npio.close(pin[, reset])`
 
 Indicate that the pin will no longer be used, and clear any poll events
 associated with it.
@@ -517,16 +499,16 @@ associated with it.
 The optional `reset` argument can be used to configure the state that `pin`
 will be left in after close:
 
-* `rpio.PIN_RESET`: return pin to `rpio.INPUT` and clear any pullup/pulldown
+* `npio.PIN_RESET`: return pin to `npio.INPUT` and clear any pullup/pulldown
   resistors.  This is the default.
-* `rpio.PIN_PRESERVE`: leave pin in its currently configured state.
+* `npio.PIN_PRESERVE`: leave pin in its currently configured state.
 
 Examples:
 
 ```js
-rpio.close(11);
-rpio.close(12, rpio.PIN_RESET);
-rpio.close(13, rpio.PIN_PRESERVE);
+npio.close(11);
+npio.close(12, npio.PIN_RESET);
+npio.close(13, npio.PIN_PRESERVE);
 ```
 
 #### GPIO demo
@@ -534,16 +516,16 @@ rpio.close(13, rpio.PIN_PRESERVE);
 The code below continuously flashes an LED connected to pin 11 at 100Hz.
 
 ```js
-var rpio = require('rpio');
+var npio = require('npio');
 
 /* Configure P11 as an output pin, setting its initial state to low */
-rpio.open(11, rpio.OUTPUT, rpio.LOW);
+npio.open(11, npio.OUTPUT, npio.LOW);
 
 /* Set the pin high every 10ms, and low 5ms after each transition to high */
 setInterval(function() {
-        rpio.write(11, rpio.HIGH);
+        npio.write(11, npio.HIGH);
         setTimeout(function() {
-                rpio.write(11, rpio.LOW);
+                npio.write(11, npio.LOW);
         }, 5);
 }, 10);
 ```
@@ -567,7 +549,7 @@ assignments are:
 therefore root.
 
 ```js
-rpio.i2cBegin();
+npio.i2cBegin();
 ```
 
 Configure the slave address.  This is between `0 - 0x7f`, and it can be helpful
@@ -575,7 +557,7 @@ to run the `i2cdetect` program to figure out where your devices are if you are
 unsure.
 
 ```js
-rpio.i2cSetSlaveAddress(0x20);
+npio.i2cSetSlaveAddress(0x20);
 ```
 
 Set the baud rate.  You can do this two different ways, depending on your
@@ -584,8 +566,8 @@ or `.i2cSetClockDivider()` to set it based on a divisor of the base 250MHz
 rate.
 
 ```js
-rpio.i2cSetBaudRate(100000);    /* 100kHz */
-rpio.i2cSetClockDivider(2500);  /* 250MHz / 2500 = 100kHz */
+npio.i2cSetBaudRate(100000);    /* 100kHz */
+npio.i2cSetClockDivider(2500);  /* 250MHz / 2500 = 100kHz */
 ```
 
 Read from and write to the i²c slave.  Both functions take a buffer and
@@ -596,14 +578,14 @@ specified.
 var txbuf = new Buffer([0x0b, 0x0e, 0x0e, 0x0f]);
 var rxbuf = new Buffer(32);
 
-rpio.i2cWrite(txbuf);           /* Sends 4 bytes */
-rpio.i2cRead(rxbuf, 16);        /* Reads 16 bytes */
+npio.i2cWrite(txbuf);           /* Sends 4 bytes */
+npio.i2cRead(rxbuf, 16);        /* Reads 16 bytes */
 ```
 
 Finally, turn off the i²c interface and return the pins to GPIO.
 
 ```js
-rpio.i2cEnd();
+npio.i2cEnd();
 ```
 
 #### i²c demo
@@ -611,7 +593,7 @@ rpio.i2cEnd();
 The code below writes two strings to a 16x2 LCD.
 
 ```js
-var rpio = require('rpio');
+var npio = require('npio');
 
 /*
  * Magic numbers to initialise the i2c display device and write output,
@@ -626,9 +608,9 @@ var LCD_ENABLE = 0x04, LCD_BACKLIGHT = 0x08;
  */
 function lcdwrite4(data)
 {
-        rpio.i2cWrite(Buffer([(data | LCD_BACKLIGHT)]));
-        rpio.i2cWrite(Buffer([(data | LCD_ENABLE | LCD_BACKLIGHT)]));
-        rpio.i2cWrite(Buffer([((data & ~LCD_ENABLE) | LCD_BACKLIGHT)]));
+        npio.i2cWrite(Buffer([(data | LCD_BACKLIGHT)]));
+        npio.i2cWrite(Buffer([(data | LCD_ENABLE | LCD_BACKLIGHT)]));
+        npio.i2cWrite(Buffer([((data & ~LCD_ENABLE) | LCD_BACKLIGHT)]));
 }
 function lcdwrite(data, mode)
 {
@@ -651,17 +633,17 @@ function lineout(str, addr)
 /*
  * We can now start the program, talking to the i2c LCD at address 0x27.
  */
-rpio.i2cBegin();
-rpio.i2cSetSlaveAddress(0x27);
-rpio.i2cSetBaudRate(10000);
+npio.i2cBegin();
+npio.i2cSetSlaveAddress(0x27);
+npio.i2cSetBaudRate(10000);
 
 for (var i = 0; i < init.length; i++)
         lcdwrite(init[i], 0);
 
 lineout('node.js i2c LCD!', LCD_LINE1);
-lineout('npm install rpio', LCD_LINE2);
+lineout('npm install npio', LCD_LINE2);
 
-rpio.i2cEnd();
+npio.i2cEnd();
 ```
 
 ### PWM
@@ -683,30 +665,30 @@ Hardware PWM also requires `gpiomem: false` and root privileges.  `.open()`
 will call `.init()` with the appropriate values if you do not explicitly call
 it yourself.
 
-To enable a PIN for PWM, use the `rpio.PWM` argument to `open()`:
+To enable a PIN for PWM, use the `npio.PWM` argument to `open()`:
 
 ```js
-rpio.open(12, rpio.PWM); /* Use pin 12 */
+npio.open(12, npio.PWM); /* Use pin 12 */
 ```
 
 Set the PWM refresh rate with `pwmSetClockDivider()`.  This is a power-of-two
 divisor of the base 19.2MHz rate, with a maximum value of 4096 (4.6875kHz).
 
 ```js
-rpio.pwmSetClockDivider(64);    /* Set PWM refresh rate to 300kHz */
+npio.pwmSetClockDivider(64);    /* Set PWM refresh rate to 300kHz */
 ```
 
 Set the PWM range for a pin with `pwmSetRange()`.  This determines the maximum
 pulse width.
 
 ```js
-rpio.pwmSetRange(12, 1024);
+npio.pwmSetRange(12, 1024);
 ```
 
 Finally, set the PWM width for a pin with `pwmSetData()`.
 
 ```js
-rpio.pwmSetData(12, 512);
+npio.pwmSetData(12, 512);
 ```
 
 #### PWM demo
@@ -714,7 +696,7 @@ rpio.pwmSetData(12, 512);
 The code below pulses an LED 5 times before exiting.
 
 ```js
-var rpio = require('rpio');
+var npio = require('npio');
 
 var pin = 12;           /* P12/GPIO18 */
 var range = 1024;       /* LEDs can quickly hit max brightness, so only use */
@@ -726,9 +708,9 @@ var times = 5;          /* How many times to pulse before exiting */
 /*
  * Enable PWM on the chosen pin and set the clock and range.
  */
-rpio.open(pin, rpio.PWM);
-rpio.pwmSetClockDivider(clockdiv);
-rpio.pwmSetRange(pin, range);
+npio.open(pin, npio.PWM);
+npio.pwmSetClockDivider(clockdiv);
+npio.pwmSetRange(pin, range);
 
 /*
  * Repeatedly pulse from low to high and back again until times runs out.
@@ -736,12 +718,12 @@ rpio.pwmSetRange(pin, range);
 var direction = 1;
 var data = 0;
 var pulse = setInterval(function() {
-        rpio.pwmSetData(pin, data);
+        npio.pwmSetData(pin, data);
         if (data === 0) {
                 direction = 1;
                 if (times-- === 0) {
                         clearInterval(pulse);
-                        rpio.open(pin, rpio.INPUT);
+                        npio.open(pin, npio.INPUT);
                         return;
                 }
         } else if (data === max) {
@@ -777,7 +759,7 @@ privileges.  `.spiBegin()` will call `.init()` with the appropriate values if
 you do not explicitly call it yourself.
 
 ```js
-rpio.spiBegin();           /* Switch GPIO7-GPIO11 to SPI mode */
+npio.spiBegin();           /* Switch GPIO7-GPIO11 to SPI mode */
 ```
 
 Choose which of the chip select / chip enable pins to control:
@@ -790,7 +772,7 @@ Choose which of the chip select / chip enable pins to control:
  *    1   | SPI_CE1 (26 / GPIO7)
  *    2   | Both
  */
-rpio.spiChipSelect(0);
+npio.spiChipSelect(0);
 ```
 
 Commonly chip enable (CE) pins are active low, and this is the default.  If
@@ -798,14 +780,14 @@ your device's CE pin is active high, use `spiSetCSPolarity()` to change the
 polarity.
 
 ```js
-rpio.spiSetCSPolarity(0, rpio.HIGH);    /* Set CE0 high to activate */
+npio.spiSetCSPolarity(0, npio.HIGH);    /* Set CE0 high to activate */
 ```
 
 Set the SPI clock speed with `spiSetClockDivider(div)`.  The `div` argument is
 an even divisor of the base 250MHz rate ranging between 0 and 65536.
 
 ```js
-rpio.spiSetClockDivider(128);   /* Set SPI speed to 1.95MHz */
+npio.spiSetClockDivider(128);   /* Set SPI speed to 1.95MHz */
 ```
 
 Set the SPI Data Mode:
@@ -819,7 +801,7 @@ Set the SPI Data Mode:
  *    2  |  1   |  0
  *    3  |  1   |  1
  */
-rpio.spiSetDataMode(0);         /* 0 is the default */
+npio.spiSetDataMode(0);         /* 0 is the default */
 ```
 
 Once everything is set up we can transfer data.  Data is sent and received in
@@ -829,21 +811,21 @@ Once everything is set up we can transfer data.  Data is sent and received in
 var txbuf = new Buffer([0x3, 0x0, 0xff, 0xff]);
 var rxbuf = new Buffer(txbuf.length);
 
-rpio.spiTransfer(txbuf, rxbuf, txbuf.length);
+npio.spiTransfer(txbuf, rxbuf, txbuf.length);
 ```
 
 If you only need to send data and do not care about the data coming back, you
 can use the slightly faster `spiWrite()` call:
 
 ```js
-rpio.spiWrite(txbuf, txbuf.length);
+npio.spiWrite(txbuf, txbuf.length);
 ```
 
 When you're finished call `.spiEnd()` to release the pins back to general
 purpose use.
 
 ```js
-rpio.spiEnd();
+npio.spiEnd();
 ```
 
 #### SPI demo
@@ -851,13 +833,13 @@ rpio.spiEnd();
 The code below reads the 128x8 contents of an AT93C46 serial EEPROM.
 
 ```js
-var rpio = require('rpio');
+var npio = require('npio');
 
-rpio.spiBegin();
-rpio.spiChipSelect(0);                  /* Use CE0 */
-rpio.spiSetCSPolarity(0, rpio.HIGH);    /* AT93C46 chip select is active-high */
-rpio.spiSetClockDivider(128);           /* AT93C46 max is 2MHz, 128 == 1.95MHz */
-rpio.spiSetDataMode(0);
+npio.spiBegin();
+npio.spiChipSelect(0);                  /* Use CE0 */
+npio.spiSetCSPolarity(0, npio.HIGH);    /* AT93C46 chip select is active-high */
+npio.spiSetClockDivider(128);           /* AT93C46 max is 2MHz, 128 == 1.95MHz */
+npio.spiSetDataMode(0);
 
 /*
  * There are various magic numbers below.  A quick overview:
@@ -877,11 +859,11 @@ var i, j = 0;
 
 for (i = 0; i < 128; i++, ++j) {
         tx[1] = i;
-        rpio.spiTransfer(tx, rx, 4);
+        npio.spiTransfer(tx, rx, 4);
         out = ((rx[2] << 1) | (rx[3] >> 7));
         process.stdout.write(out.toString(16) + ((j % 16 == 0) ? '\n' : ' '));
 }
-rpio.spiEnd();
+npio.spiEnd();
 ```
 
 ### Misc
@@ -889,9 +871,9 @@ rpio.spiEnd();
 To make code simpler a few sleep functions are supported.
 
 ```js
-rpio.sleep(n);          /* Sleep for n seconds */
-rpio.msleep(n);         /* Sleep for n milliseconds */
-rpio.usleep(n);         /* Sleep for n microseconds */
+npio.sleep(n);          /* Sleep for n seconds */
+npio.msleep(n);         /* Sleep for n milliseconds */
+npio.usleep(n);         /* Sleep for n microseconds */
 ```
 
 There will be a startup cost when calling these functions, so it is worth

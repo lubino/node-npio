@@ -544,7 +544,7 @@ NAN_METHOD(spi_end)
 /*
  * Initialize the bcm2835 interface and check we have permission to access it.
  */
-NAN_METHOD(rpio_init)
+NAN_METHOD(npio_init)
 {
 	if ((info.Length() != 1) || (!info[0]->IsNumber()))
 		return ThrowTypeError("Incorrect arguments");
@@ -561,7 +561,7 @@ NAN_METHOD(rpio_init)
     }
 }
 
-NAN_METHOD(rpio_close)
+NAN_METHOD(npio_close)
 {
     if (type == BCM2835) {
     	bcm2835_close();
@@ -573,7 +573,7 @@ NAN_METHOD(rpio_close)
 /*
  * Misc functions useful for simplicity
  */
-NAN_METHOD(rpio_usleep)
+NAN_METHOD(npio_usleep)
 {
 	if ((info.Length() != 1) || (!info[0]->IsNumber()))
 		return ThrowTypeError("Incorrect arguments");
@@ -583,9 +583,9 @@ NAN_METHOD(rpio_usleep)
 
 NAN_MODULE_INIT(setup)
 {
-	NAN_EXPORT(target, rpio_init);
-	NAN_EXPORT(target, rpio_close);
-	NAN_EXPORT(target, rpio_usleep);
+	NAN_EXPORT(target, npio_init);
+	NAN_EXPORT(target, npio_close);
+	NAN_EXPORT(target, npio_usleep);
 	NAN_EXPORT(target, gpio_function);
 	NAN_EXPORT(target, gpio_read);
 	NAN_EXPORT(target, gpio_readbuf);
@@ -618,4 +618,4 @@ NAN_MODULE_INIT(setup)
 	NAN_EXPORT(target, spi_end);
 }
 
-NODE_MODULE(rpio, setup)
+NODE_MODULE(npio, setup)

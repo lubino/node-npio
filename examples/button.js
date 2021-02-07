@@ -1,4 +1,4 @@
-var rpio = require('../lib/rpio');
+var npio = require('../lib/npio');
 
 /*
  * Watch a button switch attached to the configured pin for changes.
@@ -13,7 +13,7 @@ var pin = 11;
  * causes the input to go high, releasing it leaves the pulldown resistor to
  * pull it back down to low.
  */
-rpio.open(pin, rpio.INPUT, rpio.PULL_DOWN);
+npio.open(pin, npio.INPUT, npio.PULL_DOWN);
 
 /*
  * This callback will be called every time a configured event is detected on
@@ -32,19 +32,19 @@ function pollcb(cbpin)
 	 * setInterval() loop which polls for events) this shouldn't be a
 	 * problem.
 	 */
-	var state = rpio.read(cbpin) ? 'pressed' : 'released';
+	var state = npio.read(cbpin) ? 'pressed' : 'released';
 	console.log('Button event on P%d (button currently %s)', cbpin, state);
 
 	/*
 	 * By default this program will run forever.  If you want to cancel the
 	 * poll after the first event and end the program, uncomment this line.
 	 */
-	// rpio.poll(cbpin, null);
+	// npio.poll(cbpin, null);
 }
 
 /*
  * Configure the pin for the default set of events.  If you wanted to only
  * watch for high or low events, then you'd use the third argument to specify
- * either rpio.POLL_LOW or rpio.POLL_HIGH.
+ * either npio.POLL_LOW or npio.POLL_HIGH.
  */
-rpio.poll(pin, pollcb);
+npio.poll(pin, pollcb);
